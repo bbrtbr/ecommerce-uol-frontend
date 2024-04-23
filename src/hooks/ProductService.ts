@@ -1,7 +1,7 @@
 class ProductService {
     async getProducts(): Promise<any[]> {
       try {
-        const response = await fetch('http://localhost:3000/product');
+        const response = await fetch('http://localhost:3000/product?pageSize=&page');
         
         if (!response.ok) {
           throw new Error('Erro ao obter os produtos');
