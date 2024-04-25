@@ -3,41 +3,51 @@ import bannerShop from "../../assets/bannerShop.svg";
 import React, { useState, useEffect } from "react";
 import ProductService from "../../hooks/ProductService";
 import ProductComponent from "../../components/ProductComponent/ProductComponent";
-import icon1 from "../../assets/icon1.svg";
-import icon2 from "../../assets/icon2.svg";
-import { CiFilter } from "react-icons/ci";
+
+import { ReactComponent as Icons1 } from "../../assets/icons1.svg";
+import { ReactComponent as Icons2 } from "../../assets/icons2.svg";
+import { ReactComponent as Icons3 } from "../../assets/icons3.svg";
 
 const Shop = () => {
   const [productCount, setProductCount] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
+  const [orderBy, setOrderBy] = useState("name");
+  const [orderDirection, setOrderDirection] = useState("ASC");
+  const [pageSize, setPageSize] = useState(16);
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage, setProductsPerPage] = useState(16);
-  const [inputProductsPerPage, setInputProductsPerPage] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
       const productService = new ProductService();
       try {
-        const products = await productService.getProducts();
-        const count = products.length;
-        setProductCount(count);
-        setProducts(products);
+        const productsData = await productService.getProducts({
+          orderBy,
+          orderDirection,
+          pageSize: pageSize.toString(),
+          page: currentPage.toString(),
+        });
+        const length = await productService.getLength();
+        setProductCount(length.length);
+        setProducts(productsData);
       } catch (error) {
         console.error("Erro ao obter produtos:", error);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [orderBy, orderDirection, pageSize, currentPage]);
 
-  const handlePerPageInputChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
-    setInputProductsPerPage(e.target.value);
+  const handleOrderByChange = (e: { target: { value: string } }) => {
+    setOrderBy(e.target.value);
+  };
+  const totalPages = Math.ceil(productCount / pageSize);
+  const handleChangePageSize = (e: { target: { value: string } }) => {
+    setPageSize(Number(e.target.value));
+    setCurrentPage(1);
   };
 
-  const handlePerPageInputSubmit = (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    setProductsPerPage(parseInt(inputProductsPerPage));
-    setCurrentPage(1); 
+  const handleOrderDirectionChange = (e: { target: { value: string } }) => {
+    setOrderDirection(e.target.value);
   };
 
   const handleNextPage = () => {
@@ -45,12 +55,23 @@ const Shop = () => {
   };
 
   const handlePrevPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
-
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          onClick={() => setCurrentPage(i)}
+          className={currentPage === i ? "btnPageSelected" : "btnPage"}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  };
 
   return (
     <>
@@ -62,31 +83,67 @@ const Shop = () => {
         </div>
       </div>
       <div className="filters">
-        <CiFilter />
-        <p>Filter</p>
-        <img src={icon1} alt="Icon 1" />
-        <img src={icon2} alt="Icon 2" />
-        <p>Showing {currentProducts.length} of {productCount} results</p>
-        <form onSubmit={handlePerPageInputSubmit}>
-          <input
-            type="number"
-            placeholder="Products per page"
-            value={inputProductsPerPage}
-            onChange={handlePerPageInputChange}
-          />
-          <button type="submit">Set</button>
-        </form>
+        <div className="filter1">
+          <Icons1 />
+          <p>Filter</p>
+          <Icons2 />
+          <Icons3 />
+          <p>
+            Showing {products.length} of {productCount} results
+          </p>
+        </div>
+        <div>
+          <div className="filter2">
+            <p>Show</p>
+            <input
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                if (!isNaN(value) && value > 0) {
+                  handleChangePageSize(e);
+                }
+              }}
+              value={pageSize}
+              type="number"
+              min="1"
+              placeholder="16"
+            />
+            <p>Short by</p>
+            <select value={orderBy} onChange={handleOrderByChange}>
+              <option value="default">Default</option>
+              <option value="name">Name</option>
+              <option value="price">Price</option>
+            </select>
+            <select
+              value={orderDirection}
+              onChange={handleOrderDirectionChange}
+            >
+              <option value="ASC">Ascending</option>
+              <option value="DESC">Descending</option>
+            </select>
+          </div>
+        </div>
       </div>
       <div className="cartsItems">
         <div className="carts">
-          {currentProducts.map((product) => (
+          {products.map((product: any) => (
             <ProductComponent key={product.id} product={product} />
           ))}
         </div>
       </div>
       <div className="pagination">
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
-        <button onClick={handleNextPage} disabled={indexOfLastProduct >= productCount}>Next</button>
+        {currentPage > 1 && (
+          <button className="btnPage" onClick={handlePrevPage}>
+            Prev
+          </button>
+        )}
+
+        {renderPageNumbers()}
+
+        {currentPage < totalPages && (
+          <button className="btnPage" onClick={handleNextPage}>
+            Next
+          </button>
+        )}
       </div>
     </>
   );

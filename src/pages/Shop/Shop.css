@@ -32,3 +32,67 @@
   font-size: 16px;
   line-height: 24px;
 }
+.filters {
+  background-color: #f9f1e7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  width: 100%;
+  height: 100px;
+}
+.filter1{
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+.filter2 {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 20px;
+  margin-right: 20px;
+}
+.filter2 input {
+  width: 40px;
+  height: 40px;
+}
+.filter2 select {
+  width: 188px;
+  height: 55px;
+}
+p{
+  font-family: "Poppins";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #000000;
+}
+.btnPageSelected{
+  background-color: #B88E2F;
+  color: #FFFFFF;
+  width: 60px;
+  height: 60px;
+  margin: 0 5px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.btnPageSelected:hover{
+  transform: scale(1.1);
+}
+.btnPage{
+  background-color: #F9F1E7;
+  color: #000000;
+  width: 60px;
+  height: 60px;
+  margin: 0 5px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.btnPage:hover{
+  transform: scale(1.1);
+}
+.pagination{
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+ 
+}

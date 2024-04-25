@@ -16,7 +16,12 @@ const Home: FC = () => {
     const fetchProducts = async () => {
       try {
         const productService = new ProductService();
-        const productsData = await productService.getProducts();
+        const productsData = await productService.getProducts({
+          orderBy: "name",
+          orderDirection: "ASC",
+          pageSize: "5",
+          page: '1'
+        });
         setProducts(productsData);
       } catch (error) {
         console.error("Erro ao obter os produtos:", error);
@@ -55,7 +60,7 @@ const Home: FC = () => {
         <Heading text={"Our Products"} />
         <div className="cartsItems">
           <div className="carts">
-            {products.map((product) => (
+            {products.map((product: any) => (
               <ProductComponent key={product.id} product={product} />
             ))}
           </div>
