@@ -143,7 +143,7 @@ a {
 }
 
 .images {
-  background-image: url(../../assets/imageCart1.png);
+  background-image: url(../../assets/homepageImg.png);
   display: flex;
   align-items: flex-end;
   width: 25rem;
@@ -240,7 +240,7 @@ a {
   }
 }
 
-/* Medium screens */
+
 @media screen and (min-width: 48rem) and (max-width: 63.9375rem) {
   .carts {
     grid-template-columns: 1fr;

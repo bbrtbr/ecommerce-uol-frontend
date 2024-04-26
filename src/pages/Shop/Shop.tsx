@@ -1,21 +1,23 @@
 import "./Shop.css";
 import bannerShop from "../../assets/bannerShop.svg";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ProductService from "../../hooks/ProductService";
 import ProductComponent from "../../components/ProductComponent/ProductComponent";
-
+import { useLocation } from "react-router-dom";
 import { ReactComponent as Icons1 } from "../../assets/icons1.svg";
 import { ReactComponent as Icons2 } from "../../assets/icons2.svg";
 import { ReactComponent as Icons3 } from "../../assets/icons3.svg";
 
 const Shop = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   const [productCount, setProductCount] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
-  const [orderBy, setOrderBy] = useState("name");
+  const [orderBy, setOrderBy] = useState("default");
   const [orderDirection, setOrderDirection] = useState("ASC");
   const [pageSize, setPageSize] = useState(16);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const categoryId = queryParams.get("categoryId");
   useEffect(() => {
     const fetchProducts = async () => {
       const productService = new ProductService();
@@ -25,6 +27,7 @@ const Shop = () => {
           orderDirection,
           pageSize: pageSize.toString(),
           page: currentPage.toString(),
+          categoryId: categoryId ? parseInt(categoryId, 10) : undefined,
         });
         const length = await productService.getLength();
         setProductCount(length.length);
@@ -35,7 +38,7 @@ const Shop = () => {
     };
 
     fetchProducts();
-  }, [orderBy, orderDirection, pageSize, currentPage]);
+  }, [orderBy, orderDirection, pageSize, currentPage, categoryId]);
 
   const handleOrderByChange = (e: { target: { value: string } }) => {
     setOrderBy(e.target.value);

@@ -4,6 +4,7 @@ import "./ProductStyle.css";
 import { FaHeart } from "react-icons/fa";
 import { FiShare2 } from "react-icons/fi";
 import { MdCompareArrows } from "react-icons/md";
+import { Link } from "react-router-dom";
 interface ProductComponentProps {
   product: Product;
 }
@@ -36,9 +37,11 @@ const ProductComponent = ({ product }: ProductComponentProps) => {
         )}
         {isHovered && (
           <div className="overlay">
+             <Link to={`/product?productId=${product.id}`}>
             <button className="see-details">
               <span>See details</span>
             </button>
+            </Link>
             <div className="icon-group">
               <span>
                 <FiShare2 />

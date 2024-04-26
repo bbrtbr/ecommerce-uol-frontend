@@ -1,26 +1,28 @@
 import React, { FC, useEffect, useState } from "react";
 import "./Home.css";
+import CategoryService from "../../hooks/CategoryService";
 import Heading from "../../components/Heading/Heading";
-import ImageCart1 from "../../components/ImageCarts/ImageCart1";
+import CategoryCart from "../../components/CategoryCarts/CategoryCart";
 import ProductService from "../../hooks/ProductService";
 import ProductComponent from "../../components/ProductComponent/ProductComponent";
-import Image1 from "../../assets/imageCart1.png";
-import Image2 from "../../assets/imageCart2.png";
-import Image3 from "../../assets/imageCart3.png";
 import { Link } from "react-router-dom";
 
 const Home: FC = () => {
   const [products, setProducts] = useState<any[]>([]);
-
+  const [pageSize, setPageSize] = useState("8");
+  const [showMoreClicked, setShowMoreClicked] = useState(false);
+  const [category, setCategory] = useState<any[]>([]);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        const categoryService = new CategoryService();
+        setCategory(await categoryService.getCategory());
         const productService = new ProductService();
         const productsData = await productService.getProducts({
-          orderBy: "name",
+          orderBy: "default",
           orderDirection: "ASC",
-          pageSize: "5",
-          page: '1'
+          pageSize: pageSize,
+          page: "1",
         });
         setProducts(productsData);
       } catch (error) {
@@ -29,7 +31,15 @@ const Home: FC = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [pageSize]);
+
+  const handleShowMoreClick = () => {
+    if (!showMoreClicked) {
+      setPageSize("16");
+    } else {
+    }
+    setShowMoreClicked(true);
+  };
 
   return (
     <>
@@ -48,11 +58,14 @@ const Home: FC = () => {
 
       <div>
         <Heading text={"Browse The Range"} />
-
         <div className="Carts">
-          <ImageCart1 src={Image1} text={"Dining"} />
-          <ImageCart1 src={Image2} text={"Living"} />
-          <ImageCart1 src={Image3} text={"Bedroom"} />
+          {category.map((category: any) => (
+            <Link to={`/shop?categoryId=${category.id}`}>
+              <div key={category.id}>
+                <CategoryCart category={category} />
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
 
@@ -67,9 +80,15 @@ const Home: FC = () => {
         </div>
 
         <div className="center">
-          <Link to="/shop">
-            <button className="btn2">Show More</button>
-          </Link>
+          {!showMoreClicked ? (
+            <button className="btn2" onClick={handleShowMoreClick}>
+              Show More
+            </button>
+          ) : (
+            <Link to="/shop">
+              <button className="btn2">Go to shop</button>
+            </Link>
+          )}
         </div>
       </div>
 
