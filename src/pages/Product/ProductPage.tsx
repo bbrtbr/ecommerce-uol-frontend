@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./ProductPage.css";
 import { Link, useLocation } from "react-router-dom";
 import ProductService from "../../hooks/ProductService";
@@ -6,6 +6,7 @@ import Product from "../../models/Product";
 import ArrowRight from "../../assets/ArrowRight.svg";
 import Star from "../../assets/Star.svg";
 import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa";
+import ProductComponent from "../../components/ProductComponent/ProductComponent";
 const ProductPage = () => {
   const location = useLocation();
   const [product, setProduct] = useState<Product | null>(null);
@@ -14,11 +15,17 @@ const ProductPage = () => {
   const [activeThumbnailIndex, setActiveThumbnailIndex] = useState(0);
   const [color, setColor] = useState("purple");
   const productId = queryParams.get("productId");
-
+  const [products, setProducts] = useState<any[]>([]);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const productService = new ProductService();
+        const productsData = await productService.getProducts({
+          orderBy: "default",
+          orderDirection: "ASC",
+          pageSize: "4",
+          page: "1",
+        });
         const productData = await productService.getProductsId({
           productId: Number(productId),
         });
@@ -28,6 +35,7 @@ const ProductPage = () => {
           );
         }
         setProduct(productData);
+        setProducts(productsData);
       } catch (error) {
         console.error("Erro ao obter os produtos:", error);
       }
@@ -104,22 +112,20 @@ const ProductPage = () => {
               </li>
             </ul>
             <h2 className={"colors"}>Color</h2>
-            <ul className={"color"}>
+            <ul className="color">
               <li
                 onClick={() => setColor("purple")}
-                className={`"colorOne" ${
+                className={`colorOne ${
                   color === "purple" ? "colorActive" : ""
                 }`}
               ></li>
               <li
                 onClick={() => setColor("black")}
-                className={`"colorTwo"  ${
-                  color === "black" ? "colorActive" : ""
-                }`}
+                className={`colorTwo ${color === "black" ? "colorActive" : ""}`}
               ></li>
               <li
                 onClick={() => setColor("golden")}
-                className={`"colorThree"  ${
+                className={`colorThree ${
                   color === "golden" ? "colorActive" : ""
                 }`}
               ></li>
@@ -129,8 +135,8 @@ const ProductPage = () => {
                 <span>-</span> 2 <span>+</span>
               </button>
               <button className={"addCart"}>Add To Cart</button>
+              <button className={"addCart"}>+ Compare</button>
             </div>
-            <div className={"inStock"}>Stock: 2</div>
             <div className="details">
               <p>SKU: {product?.sku}</p>
               <p>Category: {product?.is_new}</p>
@@ -142,6 +148,35 @@ const ProductPage = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="description">
+        <h2>Description</h2>
+        <p>
+          Embodying the raw, wayward spirit of rock ‘n’ roll, the Kilburn
+          portable active stereo speaker takes the unmistakable look and sound
+          of Marshall, unplugs the chords, and takes the show on the road.
+        </p>
+        <p>
+          Weighing in under 7 pounds, the Kilburn is a lightweight piece of
+          vintage styled engineering. Setting the bar as one of the loudest
+          speakers in its class, the Kilburn is a compact, stout-hearted hero
+          with a well-balanced audio which boasts a clear midrange and extended
+          highs for a sound that is both articulate and pronounced. The analogue
+          knobs allow you to fine tune the controls to your personal preferences
+          while the guitar-influenced leather strap enables easy and stylish
+          travel.
+        </p>
+      </div>
+      <h2 className="titleRelatedProducts">Related Products</h2>
+      <div className="relatedProducts">
+        {products.map((product: any) => (
+          <ProductComponent key={product.id} product={product} />
+        ))}
+      </div>
+      <div className="showMore">
+      <Link to="/shop">
+        <button className="btn2">Show More</button>
+      </Link>
       </div>
     </section>
   );
