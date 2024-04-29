@@ -6,7 +6,7 @@
   max-width: fit-content;
   background-color: #f4f5f7;
   width: 285px;
-  height: 480px;
+  height: auto; /* Alterado */
   transition: filter 0.3s ease;
   position: relative;
   transition: transform 0.3s ease, opacity 0.3s ease;

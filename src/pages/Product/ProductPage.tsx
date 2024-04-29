@@ -34,6 +34,12 @@ const ProductPage = () => {
             productData.other_images_link
           );
         }
+        if (product?.image_link !== undefined) {
+          if (productData.other_images_link) {
+            productData.other_images_link.push(product.image_link);
+          }
+        }
+
         setProduct(productData);
         setProducts(productsData);
       } catch (error) {
@@ -42,7 +48,7 @@ const ProductPage = () => {
     };
 
     fetchProducts();
-  }, [productId]);
+  }, [productId, product]);
 
   const handleThumbnailClick = (index: number) => {
     setActiveThumbnailIndex(index);
@@ -174,9 +180,9 @@ const ProductPage = () => {
         ))}
       </div>
       <div className="showMore">
-      <Link to="/shop">
-        <button className="btn2">Show More</button>
-      </Link>
+        <Link to="/shop">
+          <button className="btn2">Show More</button>
+        </Link>
       </div>
     </section>
   );
